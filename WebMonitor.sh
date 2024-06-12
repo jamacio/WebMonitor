@@ -11,6 +11,7 @@ TIME_OFFLINE=0
 RESET_BAR=0
 LOADING_BAR=""
 TIME_OFFLINE_MSG_END=""
+ECHO_MSG=""
 
 check_website() {
 clear 
@@ -22,10 +23,10 @@ clear
     echo -e " \/  \/ \___|_.__/  \_|  |_/\___/|_| |_|_|\__\___/|_|   "
     echo -e ""
 
+    LOADING_BAR="${LOADING_BAR}░"
+    echo -e "${LOADING_BAR} \n \nChecking website status for $URL"
+    echo -e $ECHO_MSG
 
-    LOADING_BAR="${LOADING_BAR}="
-    echo -e "${LOADING_BAR}> \n \nChecking website status for $URL"
-    
     if curl -s "$URL" | grep "$STRING" > /dev/null; then
         if [ $TIME_OFFLINE -ne 0 ]; then
             OFFLINE_HOURS=$(($TIME_OFFLINE / 3600))
@@ -35,16 +36,16 @@ clear
             [ $OFFLINE_HOURS -ne 0 ] && TIME_OFFLINE_MSG="${TIME_OFFLINE_MSG}${OFFLINE_HOURS} hour(s), "
             [ $OFFLINE_MINUTES -ne 0 ] && TIME_OFFLINE_MSG="${TIME_OFFLINE_MSG}${OFFLINE_MINUTES} minute(s), and "
             TIME_OFFLINE_MSG="${TIME_OFFLINE_MSG}${OFFLINE_SECONDS} second(s)."
-            echo -e "\n \n\033[1;32mThe site is back online!\033[0m It was offline for $TIME_OFFLINE_MSG \n \n \n"
+            ECHO_MSG="\n \n\033[1;32mThe site is back online!\033[0m It was offline for $TIME_OFFLINE_MSG \n \n \n"
             TIME_OFFLINE_MSG_END=$TIME_OFFLINE_MSG
             TIME_OFFLINE=0
             LOADING_BAR=""
         else
            LOADING_BAR=""
             if [ -z "$TIME_OFFLINE_MSG_END" ]; then
-                echo -e "\n \n\033[1;32mThe site is online.\033[0m \n \n \n"
+                ECHO_MSG="\n \n\033[1;32mThe site is online.\033[0m \n \n \n"
             else
-                echo -e "\n \n\033[1;32mThe site is back online!\033[0m It was offline for $TIME_OFFLINE_MSG_END \n \n \n"
+                ECHO_MSG="\n \n\033[1;32mThe site is back online!\033[0m It was offline for $TIME_OFFLINE_MSG_END \n \n \n"
             fi
         fi
     else
@@ -57,11 +58,10 @@ clear
         [ $OFFLINE_HOURS -ne 0 ] && TIME_OFFLINE_MSG="${TIME_OFFLINE_MSG}${OFFLINE_HOURS} hour(s), "
         [ $OFFLINE_MINUTES -ne 0 ] && TIME_OFFLINE_MSG="${TIME_OFFLINE_MSG}${OFFLINE_MINUTES} minute(s), and "
         TIME_OFFLINE_MSG="${TIME_OFFLINE_MSG}${OFFLINE_SECONDS} second(s)."
-        echo -e "\n \n\\033[1;33mThe site has been offline for $TIME_OFFLINE_MSG\033[0m"
+        ECHO_MSG="\n \n\\033[1;33mThe site has been offline for $TIME_OFFLINE_MSG\033[0m"
     fi
 
-
-    if [ $RESET_BAR -ge 600 ]; then
+    if [ $RESET_BAR -ge 300 ]; then
         LOADING_BAR=''
         RESET_BAR=0
     fi
